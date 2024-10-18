@@ -14,9 +14,9 @@ Future<void> main() async {
 
   await dotenv.load(fileName: ".env");
   final String initialRoute = await determineInitialRoute();
-  Get.put(HomeController(), permanent: true);
+
   FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
-  Future.delayed(Duration(seconds: 5), () {
+  Future.delayed(Duration(seconds: 3), () {
     FlutterNativeSplash.remove();
   });
 
@@ -35,6 +35,7 @@ Future<String> determineInitialRoute() async {
   final String? token = prefs.getString('token');
   bool valid = await AuthController.validToken();
   if (token != null && token.isNotEmpty && valid) {
+    Get.put(HomeController(), permanent: true);
     return Routes.HOME;
   } else {
     return Routes.LOGIN;

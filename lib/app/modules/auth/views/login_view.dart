@@ -108,8 +108,9 @@ class LoginView extends GetView<AuthController> {
                       onPressed: () {
                         if (_formKey.currentState!.validate()) {
                           loginController.signInWithCredential(
-                              email: _emailController.text,
-                              password: _passwordController.text);
+                            email: _emailController.text,
+                            password: _passwordController.text,
+                          );
                         }
                       },
                       child: Padding(

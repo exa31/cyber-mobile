@@ -1,13 +1,19 @@
 import 'package:get/get.dart';
 
+import '../modules/address/bindings/address_binding.dart';
+import '../modules/address/views/address_view.dart';
 import '../modules/auth/bindings/auth_binding.dart';
 import '../modules/auth/views/login_view.dart';
 import '../modules/auth/views/register_view.dart';
 import '../modules/auth/views/started_view.dart';
 import '../modules/cart/bindings/cart_binding.dart';
 import '../modules/cart/views/cart_view.dart';
+import '../modules/create_address/bindings/create_address_binding.dart';
+import '../modules/create_address/views/create_address_view.dart';
 import '../modules/detail_product/bindings/detail_product_binding.dart';
 import '../modules/detail_product/views/detail_product_view.dart';
+import '../modules/edit_address/bindings/edit_address_binding.dart';
+import '../modules/edit_address/views/edit_address_view.dart';
 import '../modules/home/bindings/home_binding.dart';
 import '../modules/home/views/home_view.dart';
 import '../modules/onboarding/bindings/onboarding_binding.dart';
@@ -34,7 +40,10 @@ class AppPages {
           GetPage(
             name: _Paths.DETAIL_PRODUCT,
             page: () => DetailProductView(),
-            binding: DetailProductBinding(),
+            bindings: [
+              DetailProductBinding(),
+              HomeBinding(),
+            ],
           ),
         ]),
     GetPage(
@@ -57,6 +66,26 @@ class AppPages {
       bindings: [
         CartBinding(),
         HomeBinding(),
+      ],
+    ),
+    GetPage(
+      name: _Paths.ADDRESS,
+      page: () => AddressView(),
+      binding: AddressBinding(),
+      children: [
+        GetPage(
+          name: _Paths.CREATE_ADDRESS,
+          page: () => CreateAddressView(),
+          bindings: [
+            CreateAddressBinding(),
+            AddressBinding(),
+          ],
+        ),
+        GetPage(
+          name: _Paths.EDIT_ADDRESS,
+          page: () => const EditAddressView(),
+          binding: EditAddressBinding(),
+        ),
       ],
     ),
   ];

@@ -10,6 +10,7 @@ class CartController extends GetxController {
   //TODO: Implement CartController
   Dio dio = Dio();
   List<CartModel> products = [];
+  bool isLoading = false;
 
   @override
   void onInit() {
@@ -22,8 +23,6 @@ class CartController extends GetxController {
     SharedPreferences prefs = await SharedPreferences.getInstance();
 
     try {
-      log('fetching cart');
-      log(prefs.getString('token')!);
       var response = await dio.get('$url/api/carts',
           options: Options(headers: {
             'Authorization': 'Bearer ${prefs.getString('token')}',
@@ -39,7 +38,6 @@ class CartController extends GetxController {
               (product) => CartModel.fromJson(product),
             ),
           );
-          log(products.length.toString());
           update();
         }
       }
@@ -50,6 +48,121 @@ class CartController extends GetxController {
       } else if (e.response!.statusCode == 404) {
         products = [];
       }
+    }
+  }
+
+  Future<void> addToCart({required String id}) async {
+    var url = dotenv.env['BASE_URL'];
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    var token = prefs.getString('token');
+
+    try {
+      isLoading = true;
+      update();
+      var response = await dio.post(
+        '$url/api/carts',
+        data: {
+          'productId': id,
+          'quantity': 1,
+        },
+        options: Options(
+          headers: {
+            'Authorization': 'Bearer $token',
+          },
+        ),
+      );
+      if (response.statusCode == 200) {
+        products = products.where(
+          (product) {
+            if (product.product.id == id) {
+              product.quantity += 1;
+            }
+            return true;
+          },
+        ).toList();
+        isLoading = false;
+        update();
+      }
+      Get.snackbar('Success', 'Product added to cart');
+    } on DioException catch (e) {
+      log(e.response!.data.toString());
+      isLoading = false;
+      update();
+      Get.snackbar('Error', 'Opps, something went wrong when adding to cart');
+    }
+  }
+
+  Future<void> reduceCart({required String id}) async {
+    var url = dotenv.env['BASE_URL'];
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    var token = prefs.getString('token');
+    try {
+      isLoading = true;
+      update();
+      var response = await dio.post(
+        '$url/api/carts/reduce',
+        data: {
+          'productId': id,
+        },
+        options: Options(
+          headers: {
+            'Authorization': 'Bearer $token',
+          },
+        ),
+      );
+      if (response.statusCode == 200) {
+        products = products.where((element) {
+          if (element.product.id == id) {
+            element.quantity -= 1;
+          } else if (element.quantity == 1) {
+            return false;
+          }
+          return element.quantity > 0;
+        }).toList();
+        isLoading = false;
+        update();
+      }
+      Get.snackbar('Success', 'Product reduce from cart');
+    } on DioException catch (e) {
+      log(e.response!.data.toString());
+      isLoading = false;
+      update();
+      Get.snackbar(
+          'Error', 'Opps, something went wrong when deleting from cart');
+    }
+  }
+
+  Future<void> deleteCart({required String id}) async {
+    var url = dotenv.env['BASE_URL'];
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    var token = prefs.getString('token');
+
+    try {
+      isLoading = true;
+      update();
+      var response = await dio.post(
+        '$url/api/carts/remove',
+        data: {
+          'productId': id,
+        },
+        options: Options(
+          headers: {
+            'Authorization': 'Bearer $token',
+          },
+        ),
+      );
+      if (response.statusCode == 200) {
+        products.removeWhere((element) => element.product.id == id);
+        isLoading = false;
+        update();
+      }
+      Get.snackbar('Success', 'Product deleted from cart');
+    } on DioException catch (e) {
+      log(e.response!.data.toString());
+      isLoading = false;
+      update();
+      Get.snackbar(
+          'Error', 'Opps, something went wrong when deleting from cart');
     }
   }
 }

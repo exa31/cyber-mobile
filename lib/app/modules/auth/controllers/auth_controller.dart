@@ -1,4 +1,5 @@
 import 'package:cyber/app/data/models/auth_model.dart';
+import 'package:cyber/app/modules/home/controllers/home_controller.dart';
 import 'package:cyber/app/routes/app_pages.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
@@ -59,7 +60,9 @@ class AuthController extends GetxController {
         user = AuthModel(name: data.name, token: data.token);
         prefs.setString('token', data.token);
         prefs.setString('name', data.name);
+        prefs.setString('email', email);
         prefs.setBool('login', true);
+        Get.put(HomeController(), permanent: true);
         Get.offAllNamed(Routes.HOME);
       } else {
         Get.to(() => Routes.REGISTER);
@@ -85,7 +88,9 @@ class AuthController extends GetxController {
         user = AuthModel(name: data.name, token: data.token);
         prefs.setString('token', data.token);
         prefs.setString('name', data.name);
+        prefs.setString('email', email);
         prefs.setBool('login', true);
+        Get.put(HomeController(), permanent: true);
         Get.offAllNamed(Routes.HOME);
       } else {
         Get.snackbar('Error', 'Email or Password is wrong',

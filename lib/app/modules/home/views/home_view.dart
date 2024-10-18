@@ -1,5 +1,6 @@
 import 'package:cyber/app/modules/auth/views/started_view.dart';
 import 'package:cyber/app/modules/home/views/pages/home_pages.dart';
+import 'package:cyber/app/modules/home/views/pages/profile_pages.dart';
 import 'package:flutter/material.dart';
 
 import 'package:get/get.dart';
@@ -13,7 +14,8 @@ class HomeView extends StatelessWidget {
 
   final page = [
     HomePages(),
-    StartedView(),
+    HomePages(),
+    ProfilePages(),
   ];
 
   @override
@@ -26,6 +28,7 @@ class HomeView extends StatelessWidget {
         init: homeController,
         builder: (controller) => BottomNavigationBar(
           onTap: (value) => controller.changePage(value),
+          currentIndex: controller.indexPage,
           items: const <BottomNavigationBarItem>[
             BottomNavigationBarItem(
               icon: Icon(Icons.home),
@@ -36,8 +39,8 @@ class HomeView extends StatelessWidget {
               label: 'Business',
             ),
             BottomNavigationBarItem(
-              icon: Icon(Icons.school),
-              label: 'School',
+              icon: Icon(Icons.person),
+              label: 'Profile',
             ),
           ],
           selectedItemColor: Colors.amber[800],

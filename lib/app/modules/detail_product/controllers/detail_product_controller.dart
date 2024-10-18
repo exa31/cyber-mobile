@@ -11,6 +11,7 @@ class DetailProductController extends GetxController {
   //TODO: Implement DetailProductController
   Dio dio = Dio();
   bool isLoading = true;
+  bool isLoadingAddToCart = false;
   String activeImage = '';
   ProductModel? product;
   List<ProductModel> products = [];
@@ -120,9 +121,10 @@ class DetailProductController extends GetxController {
     String url = dotenv.env['BASE_URL'].toString();
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     var token = prefs.getString('token');
-    log(id);
+    isLoadingAddToCart = true;
+    update();
     try {
-      var response = await dio.post(
+      await dio.post(
         '$url/api/carts',
         data: {
           'productId': id,
@@ -134,9 +136,12 @@ class DetailProductController extends GetxController {
           },
         ),
       );
-      log("res ${response.data.toString()}");
+      isLoadingAddToCart = false;
+      update();
       Get.snackbar('Success', 'Product added to cart');
     } on DioException catch (e) {
+      isLoadingAddToCart = false;
+      update();
       Get.snackbar('Error', 'Opps, something went wrong when adding to cart');
       log(e.response!.data.toString());
     }

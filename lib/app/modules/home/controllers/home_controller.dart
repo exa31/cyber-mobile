@@ -6,6 +6,7 @@ import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:get/get.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class HomeController extends GetxController {
   //TODO: Implement HomeController
@@ -15,10 +16,13 @@ class HomeController extends GetxController {
   List<ProductModel> products = [];
   List<CategoryModel> categories = [];
   Dio dio = Dio();
+
   int totalProducts = 0;
   bool isLoadingCategory = false;
   bool isLoading = false;
   bool isLoadingEnd = false;
+  String? name;
+  String? email;
   String? activeCategory;
   var scroll = ScrollController();
   CancelToken cancelToken = CancelToken();
@@ -38,7 +42,14 @@ class HomeController extends GetxController {
         }
       }
     });
+    getProfile();
     fetchAllFirst();
+  }
+
+  void getProfile() async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    name = prefs.getString('name')!;
+    email = prefs.getString('email')!;
   }
 
   void selectCategory({required String name}) async {

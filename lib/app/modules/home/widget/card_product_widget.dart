@@ -20,15 +20,13 @@ class CardProductWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return InkWell(
-      onTap: () => Get.toNamed('${Routes.HOME}detail-product/$id', arguments: {
-        'id': id,
-      }),
+      onTap: () => Get.toNamed('${Routes.HOME}detail-product/$id'),
       child: Container(
         padding: const EdgeInsets.all(10),
         decoration: BoxDecoration(
           boxShadow: [
             BoxShadow(
-              color: Colors.grey.withOpacity(0.1),
+              color: Colors.grey.withOpacity(0.3),
               spreadRadius: 1,
               blurRadius: 7,
               offset: Offset(0, 3),

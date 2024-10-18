@@ -1,3 +1,4 @@
+import 'package:cyber/app/modules/cart/controllers/cart_controller.dart';
 import 'package:cyber/app/modules/detail_product/controllers/detail_product_controller.dart';
 import 'package:cyber/app/modules/detail_product/widget/detail_product_widget.dart';
 import 'package:cyber/app/modules/home/widget/card_product_widget.dart';
@@ -17,6 +18,7 @@ class DetailProductView extends StatelessWidget {
 
   final DetailProductController detailProductController =
       Get.find<DetailProductController>();
+  final CartController cartController = Get.find<CartController>();
 
   @override
   Widget build(BuildContext context) {
@@ -165,8 +167,10 @@ class DetailProductView extends StatelessWidget {
             : SizedBox(
                 width: double.infinity,
                 child: ElevatedButton(
-                  onPressed: () {
-                    controller.addToCart(id: controller.product!.id);
+                  onPressed: () async {
+                    if (controller.isLoadingAddToCart) return;
+                    await controller.addToCart(id: controller.product!.id);
+                    cartController.fetchCart();
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.black,
