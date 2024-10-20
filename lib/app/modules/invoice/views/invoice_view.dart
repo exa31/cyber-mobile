@@ -173,12 +173,11 @@ class InvoiceView extends GetView<InvoiceController> {
                             'Payment Method: ',
                             style: TextStyle(fontWeight: FontWeight.bold),
                           ),
-                          Text(controller.invoice!.paymentMethod!),
-                          // Text(controller.invoice!.statusPayment == 'pending'
-                          //     ? 'Select Payment Method'
-                          //     : controller.invoice!.statusPayment == "cancelled"
-                          //         ? 'Cancel'
-                          //         : controller.invoice!.paymentMethod!),
+                          Text(controller.invoice!.statusPayment == 'pending'
+                              ? 'Select Payment Method'
+                              : controller.invoice!.statusPayment == "cancelled"
+                                  ? 'Cancel'
+                                  : controller.invoice!.paymentMethod!),
                         ],
                       ),
                       Row(
