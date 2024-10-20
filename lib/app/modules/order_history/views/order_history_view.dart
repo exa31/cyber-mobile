@@ -17,81 +17,101 @@ class OrderHistoryView extends GetView<OrderHistoryController> {
         title: const Text('Order History'),
         centerTitle: true,
       ),
-      body: SingleChildScrollView(
-        child: Container(
-          padding: const EdgeInsets.all(20),
-          child: Column(
-            children: [
-              Text(
-                "Order History",
-                style: TextStyle(fontSize: 20, fontWeight: FontWeight.w700),
-              ),
-              const SizedBox(height: 20),
-              GetBuilder(
-                init: orderController,
-                builder: (controller) {
-                  return ListView.separated(
-                    itemCount: controller.orders.length,
-                    shrinkWrap: true,
-                    physics: const NeverScrollableScrollPhysics(),
-                    separatorBuilder: (context, index) {
-                      return const SizedBox(height: 30);
-                    },
-                    itemBuilder: (context, index) {
-                      final order = controller.orders[index];
-                      final createdAt = DateTime.parse(order.createdAt);
-                      final updatedAt = DateTime.parse(order.updatedAt);
-                      final formattedDate = DateFormat('dd MMMM yyyy').format(
-                        createdAt == updatedAt ? createdAt : updatedAt,
-                      );
-                      return Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Text(
-                                formattedDate,
-                                style: TextStyle(
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.w500,
+      body: RefreshIndicator(
+        onRefresh: () async {
+          orderController.onInit();
+        },
+        child: SingleChildScrollView(
+          child: Container(
+            padding: const EdgeInsets.all(20),
+            child: Column(
+              children: [
+                Text(
+                  "Order History",
+                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.w700),
+                ),
+                const SizedBox(height: 20),
+                GetBuilder(
+                  init: orderController,
+                  builder: (controller) {
+                    return ListView.separated(
+                      itemCount: controller.orders.length,
+                      shrinkWrap: true,
+                      physics: const NeverScrollableScrollPhysics(),
+                      separatorBuilder: (context, index) {
+                        return const SizedBox(height: 30);
+                      },
+                      itemBuilder: (context, index) {
+                        final order = controller.orders[index];
+                        final createdAt = DateTime.parse(order.createdAt);
+                        final updatedAt = DateTime.parse(order.updatedAt);
+                        final formattedDate = DateFormat('dd MMMM yyyy').format(
+                          createdAt == updatedAt ? createdAt : updatedAt,
+                        );
+                        return Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text(
+                                  formattedDate,
+                                  style: TextStyle(
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.w500,
+                                  ),
                                 ),
-                              ),
-                              Text(
-                                Helper.formatPrice(order.total),
-                              ),
-                            ],
-                          ),
-                          const SizedBox(height: 5),
-                          Text(
-                            "${order.orderItems.length} items",
-                            style: TextStyle(fontSize: 12, color: Colors.grey),
-                          ),
-                          const SizedBox(height: 5),
-                          SizedBox(
-                            width: double.infinity,
-                            child: ElevatedButton(
-                              onPressed: () {
-                                Get.toNamed(
-                                  '/invoice/${order.id}',
-                                );
-                              },
-                              style: ElevatedButton.styleFrom(
-                                shape: RoundedRectangleBorder(
-                                  side: BorderSide(color: Colors.black),
-                                  borderRadius: BorderRadius.circular(50),
+                                Text(
+                                  Helper.formatPrice(order.total),
                                 ),
-                              ),
-                              child: Text("View Invoice"),
+                              ],
                             ),
-                          ),
-                        ],
-                      );
-                    },
-                  );
-                },
-              ),
-            ],
+                            const SizedBox(height: 5),
+                            Text(
+                              "${order.orderItems.length} items",
+                              style:
+                                  TextStyle(fontSize: 12, color: Colors.grey),
+                            ),
+                            const SizedBox(height: 5),
+                            SizedBox(
+                              width: double.infinity,
+                              child: ElevatedButton(
+                                onPressed: () {
+                                  Get.toNamed(
+                                    '/invoice/${order.id}',
+                                  );
+                                },
+                                style: ElevatedButton.styleFrom(
+                                  shape: RoundedRectangleBorder(
+                                    side: BorderSide(color: Colors.black),
+                                    borderRadius: BorderRadius.circular(50),
+                                  ),
+                                ),
+                                child: Text("View Invoice"),
+                              ),
+                            ),
+                          ],
+                        );
+                      },
+                    );
+                  },
+                ),
+                GetBuilder(
+                    init: orderController,
+                    builder: (controller) {
+                      return controller.loading
+                          ? Column(
+                              children: [
+                                const SizedBox(height: 100),
+                                Center(
+                                  child: CircularProgressIndicator(),
+                                ),
+                              ],
+                            )
+                          : SizedBox();
+                    }),
+              ],
+            ),
           ),
         ),
       ),

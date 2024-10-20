@@ -140,8 +140,10 @@ class DetailProductView extends StatelessWidget {
                                 controller.products.length,
                                 (index) => CardProductWidget(
                                   homeController: homeController,
-                                  like: homeController.listLikes.contains(
-                                      homeController.products[index].id),
+                                  like: homeController.listLikes.any(
+                                      (product) =>
+                                          product.id ==
+                                          homeController.products[index].id),
                                   imageThumbnail:
                                       controller.products[index].imageThumbnail,
                                   id: controller.products[index].id,

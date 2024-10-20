@@ -107,12 +107,11 @@ flutter:
 
 flutter_native_splash:
   color: "#ffffff"
-  image: assets/images/splash_img.jpg
+  image: assets/images/splash_logo2.png    
+  branding: assets/images/splash.png
   android: true
   ios: true
-  background_image: assets/images/bg_splash.jpg
-  branding_mode: center
-
+  
   android_12:
     color: "#ffffff"
     icon_background_color: "#ffffff"    

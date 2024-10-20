@@ -173,11 +173,12 @@ class InvoiceView extends GetView<InvoiceController> {
                             'Payment Method: ',
                             style: TextStyle(fontWeight: FontWeight.bold),
                           ),
-                          Text(controller.invoice!.statusPayment == 'pending'
-                              ? 'Select Payment Method'
-                              : controller.invoice!.statusPayment == "cancelled"
-                                  ? 'Cancel'
-                                  : controller.invoice!.paymentMethod!),
+                          Text(controller.invoice!.paymentMethod!),
+                          // Text(controller.invoice!.statusPayment == 'pending'
+                          //     ? 'Select Payment Method'
+                          //     : controller.invoice!.statusPayment == "cancelled"
+                          //         ? 'Cancel'
+                          //         : controller.invoice!.paymentMethod!),
                         ],
                       ),
                       Row(
@@ -191,8 +192,7 @@ class InvoiceView extends GetView<InvoiceController> {
                         ],
                       ),
                       const SizedBox(height: 20),
-                      controller.invoice?.statusPayment == 'pending' &&
-                              controller.invoice!.paymentMethod == null
+                      controller.invoice?.statusPayment == 'pending'
                           ? SizedBox(
                               width: double.infinity,
                               child: ElevatedButton(

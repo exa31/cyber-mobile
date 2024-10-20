@@ -51,12 +51,12 @@ class CardProductWidget extends StatelessWidget {
                       return Image.asset(
                         'assets/images/no_image.jpg',
                         width: double.infinity,
-                        height: 120,
+                        height: 100,
                         fit: BoxFit.cover,
                       );
                     },
                     width: double.infinity,
-                    height: 120,
+                    height: 100,
                     fit: BoxFit.cover,
                   ),
                 ),

@@ -10,7 +10,33 @@ import 'app/routes/app_pages.dart';
 
 Future<void> main() async {
   WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
-
+  ErrorWidget.builder = (FlutterErrorDetails details) {
+    return Container(
+      color: Colors.white,
+      child: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text(
+              "Error appeared.",
+              style: TextStyle(
+                color: Colors.red,
+                fontSize: 24,
+              ),
+            ),
+            SizedBox(height: 20),
+            ElevatedButton(
+              onPressed: () {
+                // Reload the current route
+                Get.reload();
+              },
+              child: Text("Refresh"),
+            ),
+          ],
+        ),
+      ),
+    );
+  };
   await dotenv.load(fileName: ".env");
   final String initialRoute = await determineInitialRoute();
 

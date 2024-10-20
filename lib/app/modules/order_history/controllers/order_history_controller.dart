@@ -15,6 +15,7 @@ class OrderHistoryController extends GetxController {
   @override
   void onInit() {
     super.onInit();
+    loading = true;
     getOrders();
   }
 
@@ -23,6 +24,7 @@ class OrderHistoryController extends GetxController {
       String url = dotenv.env['BASE_URL']!;
       SharedPreferences prefs = await SharedPreferences.getInstance();
       String token = prefs.getString('token')!;
+      loading = true;
       var response = await dio.get(
         '$url/api/orders',
         options: Options(
@@ -31,15 +33,17 @@ class OrderHistoryController extends GetxController {
           },
         ),
       );
-      log(response.data.toString());
       if (response.statusCode == 200) {
         orders = List<OrderModel>.from(
-            response.data.map((x) => OrderModel.fromJson(x)));
+            response.data.map((order) => OrderModel.fromJson(order)));
         loading = false;
         update();
       }
     } on DioException catch (e) {
       log(e.response!.data.toString());
+      loading = false;
+      Get.snackbar('Error', 'Opps, something went wrong please refresh');
+      update();
     }
   }
 }
