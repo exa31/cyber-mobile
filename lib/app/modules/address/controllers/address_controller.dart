@@ -11,6 +11,7 @@ class AddressController extends GetxController {
   Dio dio = Dio();
   List<AddressModel>? addresses;
   bool isLoading = false;
+  bool isDeleting = false;
 
   @override
   void onInit() {
@@ -51,6 +52,31 @@ class AddressController extends GetxController {
         isLoading = false;
         update();
       }
+    }
+  }
+
+  Future<void> deleteAddress(String id) async {
+    String url = dotenv.env['BASE_URL']!;
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    isDeleting = true;
+    update();
+    var token = prefs.getString('token');
+    try {
+      var response = await dio.delete(
+        '$url/api/delivery-addresses/$id',
+        options: Options(
+          headers: {
+            'Authorization': 'Bearer $token',
+          },
+        ),
+      );
+      if (response.statusCode == 204) {
+        addresses!.removeWhere((element) => element.id == id);
+        isDeleting = false;
+        update();
+      }
+    } on DioException catch (e) {
+      log(e.response!.data.toString());
     }
   }
 }

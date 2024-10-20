@@ -21,7 +21,7 @@ class AuthController extends GetxController {
     final String? token = prefs.getString('token');
     if (token != null) {
       var response = await dio.get(
-        '${dotenv.env['BASE_URL']}/auth/valid',
+        '${dotenv.env['BASE_URL']}/auth/me',
         options: Options(
           headers: {"Authorization": "Bearer $token"},
         ),

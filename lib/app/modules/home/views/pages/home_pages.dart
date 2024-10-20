@@ -4,7 +4,7 @@ import 'package:cyber/app/modules/home/widget/bar_categories.widget.dart';
 import 'package:cyber/app/modules/home/widget/card_product_widget.dart';
 import 'package:cyber/app/modules/home/widget/skeleton_categories_widget.dart';
 import 'package:cyber/app/modules/home/widget/skeleton_products_widget.dart';
-import 'package:cyber/app/modules/home/widget/top_bar_widget.dart';
+import 'package:cyber/app/modules/home/widget/top_bar_search_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -33,7 +33,7 @@ class HomePages extends StatelessWidget {
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text('Hello',
+                        Text('Hello ${homeController.name!.split(' ')[0]}',
                             style: TextStyle(
                                 fontSize: 30, fontWeight: FontWeight.w600)),
                         Text(
@@ -82,7 +82,7 @@ class HomePages extends StatelessWidget {
                   ],
                 ),
                 SizedBox(height: 40),
-                TopBarWidget(),
+                TopBarSearchWidget(),
                 SizedBox(height: 20),
                 Text(
                   'Categories',
@@ -107,11 +107,15 @@ class HomePages extends StatelessWidget {
                           child: GridView.count(
                             crossAxisCount: 2,
                             crossAxisSpacing: 10,
-                            controller: homeController.scroll,
+                            controller: homeController.scrollHome,
                             mainAxisSpacing: 10,
                             children: List.generate(
                               homeController.products.length,
                               (index) => CardProductWidget(
+                                homeController: controller,
+                                like: homeController.listLikes.any((product) =>
+                                    product.id ==
+                                    homeController.products[index].id),
                                 imageThumbnail: homeController
                                     .products[index].imageThumbnail,
                                 id: homeController.products[index].id,

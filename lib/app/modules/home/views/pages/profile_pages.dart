@@ -113,6 +113,9 @@ class ProfilePages extends StatelessWidget {
                       trailing: Icon(Icons.arrow_forward_ios),
                     ),
                     ListTile(
+                      onTap: () {
+                        Get.toNamed(Routes.ORDER_HISTORY);
+                      },
                       leading: Icon(Icons.history),
                       title: Text('Order History'),
                       trailing: Icon(Icons.arrow_forward_ios),

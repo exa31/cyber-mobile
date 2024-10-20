@@ -1,4 +1,3 @@
-import 'package:cyber/app/modules/auth/controllers/auth_controller.dart';
 import 'package:cyber/app/modules/home/controllers/home_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -33,11 +32,11 @@ Future<void> main() async {
 Future<String> determineInitialRoute() async {
   final SharedPreferences prefs = await SharedPreferences.getInstance();
   final String? token = prefs.getString('token');
-  bool valid = await AuthController.validToken();
-  if (token != null && token.isNotEmpty && valid) {
+  // bool valid = await AuthController.validToken();
+  if (token != null && token.isNotEmpty) {
     Get.put(HomeController(), permanent: true);
     return Routes.HOME;
   } else {
-    return Routes.LOGIN;
+    return Routes.ONBOARDING;
   }
 }

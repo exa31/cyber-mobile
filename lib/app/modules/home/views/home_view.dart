@@ -1,6 +1,6 @@
-import 'package:cyber/app/modules/auth/views/started_view.dart';
 import 'package:cyber/app/modules/home/views/pages/home_pages.dart';
 import 'package:cyber/app/modules/home/views/pages/profile_pages.dart';
+import 'package:cyber/app/modules/home/views/pages/wishlist_pages.dart';
 import 'package:flutter/material.dart';
 
 import 'package:get/get.dart';
@@ -14,7 +14,7 @@ class HomeView extends StatelessWidget {
 
   final page = [
     HomePages(),
-    HomePages(),
+    WishlistPages(),
     ProfilePages(),
   ];
 
@@ -35,8 +35,8 @@ class HomeView extends StatelessWidget {
               label: 'Home',
             ),
             BottomNavigationBarItem(
-              icon: Icon(Icons.business),
-              label: 'Business',
+              icon: Icon(Icons.favorite),
+              label: 'Wishlist',
             ),
             BottomNavigationBarItem(
               icon: Icon(Icons.person),

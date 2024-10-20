@@ -1,6 +1,7 @@
 import 'dart:developer';
 
 import 'package:cyber/app/data/models/product_model.dart';
+import 'package:cyber/app/modules/cart/controllers/cart_controller.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -20,6 +21,7 @@ class DetailProductController extends GetxController {
   int totalProducts = 0;
   bool isLoadingEnd = false;
   ScrollController scroll = ScrollController();
+  final CartController cartController = Get.find<CartController>();
 
   @override
   void onInit() {
@@ -124,7 +126,7 @@ class DetailProductController extends GetxController {
     isLoadingAddToCart = true;
     update();
     try {
-      await dio.post(
+      var res = await dio.post(
         '$url/api/carts',
         data: {
           'productId': id,
@@ -137,6 +139,11 @@ class DetailProductController extends GetxController {
         ),
       );
       isLoadingAddToCart = false;
+      if (res.statusCode == 200) {
+        cartController.fetchCart();
+        update();
+        Get.snackbar('Success', 'Product added to cart');
+      }
       update();
       Get.snackbar('Success', 'Product added to cart');
     } on DioException catch (e) {

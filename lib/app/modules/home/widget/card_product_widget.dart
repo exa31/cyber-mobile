@@ -1,3 +1,4 @@
+import 'package:cyber/app/modules/home/controllers/home_controller.dart';
 import 'package:cyber/app/routes/app_pages.dart';
 import 'package:cyber/helper/main.dart';
 import 'package:flutter/material.dart';
@@ -10,9 +11,13 @@ class CardProductWidget extends StatelessWidget {
       required this.id,
       required this.imageThumbnail,
       required this.name,
+      required this.like,
+      required this.homeController,
       required this.price});
   final String imageThumbnail;
   final String name;
+  final bool like;
+  final HomeController homeController;
   final String id;
   final int price;
   final url = dotenv.env['BASE_URL']!;
@@ -57,16 +62,18 @@ class CardProductWidget extends StatelessWidget {
                 ),
                 Positioned(
                   right: 0,
-                  top: 5,
+                  top: 0,
                   child: Container(
                     padding: const EdgeInsets.all(5),
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(10),
-                      color: Colors.white.withOpacity(0.7),
                     ),
-                    child: Icon(
-                      Icons.favorite,
-                      color: Colors.red,
+                    child: IconButton(
+                      icon: Icon(Icons.favorite),
+                      onPressed: () {
+                        homeController.likes(id: id);
+                      },
+                      color: like ? Colors.red : Colors.grey,
                     ),
                   ),
                 ),

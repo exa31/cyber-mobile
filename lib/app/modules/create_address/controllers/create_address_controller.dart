@@ -2,6 +2,7 @@ import 'dart:developer';
 
 import 'package:cyber/app/data/models/wilayah_model.dart';
 import 'package:cyber/app/modules/address/controllers/address_controller.dart';
+import 'package:cyber/app/modules/select_addresses/controllers/select_addresses_controller.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -27,8 +28,6 @@ class CreateAddressController extends GetxController {
   bool isLoadingKec = true;
   bool isLoadingKel = true;
 
-  final AddressController addressController = Get.find<AddressController>();
-
   @override
   void onInit() {
     super.onInit();
@@ -37,7 +36,6 @@ class CreateAddressController extends GetxController {
 
   @override
   void onClose() {
-    log('onClose');
     nameController.dispose();
     provinceController.dispose();
     kotaController.dispose();
@@ -47,11 +45,6 @@ class CreateAddressController extends GetxController {
   }
 
   Future<void> createAddress() async {
-    // log('province: ${provinceController.text}');
-    // log('kota: ${kotaController.text}');
-    // log('kec: ${kecController.text}');
-    // log('kel: ${kelController.text}');
-    // log('detail: ${detailController.text}');
     String url = dotenv.env['BASE_URL']!;
     SharedPreferences prefs = await SharedPreferences.getInstance();
     try {
@@ -72,8 +65,15 @@ class CreateAddressController extends GetxController {
         },
       );
       if (response.statusCode == 201) {
-        log("suceess cere");
-        await addressController.getAddress();
+        if (Get.arguments != null) {
+          final SelectAddressesController selectAddressesController =
+              Get.find<SelectAddressesController>();
+          await selectAddressesController.getAddress();
+        } else {
+          final AddressController addressController =
+              Get.find<AddressController>();
+          await addressController.getAddress();
+        }
         Get.back();
       }
     } catch (e) {
@@ -89,9 +89,7 @@ class CreateAddressController extends GetxController {
           'https://exa31.github.io/api-wilayah-indonesia/api/provinces.json');
 
       final List<dynamic> data = response.data;
-      log("message : $data");
       provinces = List.from(data.map((e) => WilayahModel.fromJson(e)));
-      log("provinces: $provinces");
       update();
     } catch (e) {
       log(e.toString());
@@ -125,10 +123,8 @@ class CreateAddressController extends GetxController {
       update();
       final response = await dio.get(
           'https://exa31.github.io/api-wilayah-indonesia/api/districts/$id.json');
-
       final List<dynamic> data = response.data;
       kec = List.from(data.map((e) => WilayahModel.fromJson(e)));
-
       update();
     } catch (e) {
       log(e.toString());

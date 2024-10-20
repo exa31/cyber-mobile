@@ -10,12 +10,22 @@ class CartController extends GetxController {
   //TODO: Implement CartController
   Dio dio = Dio();
   List<CartModel> products = [];
+  int totalCart = 0;
   bool isLoading = false;
 
   @override
   void onInit() {
     super.onInit();
     fetchCart();
+  }
+
+  void calculateTotalCart() {
+    totalCart = products.fold(
+      0,
+      (previousValue, products) =>
+          previousValue + (products.product.price * products.quantity),
+    );
+    update();
   }
 
   Future<void> fetchCart() async {
@@ -38,6 +48,7 @@ class CartController extends GetxController {
               (product) => CartModel.fromJson(product),
             ),
           );
+          calculateTotalCart();
           update();
         }
       }
@@ -80,6 +91,7 @@ class CartController extends GetxController {
             return true;
           },
         ).toList();
+        calculateTotalCart();
         isLoading = false;
         update();
       }
@@ -119,6 +131,7 @@ class CartController extends GetxController {
           }
           return element.quantity > 0;
         }).toList();
+        calculateTotalCart();
         isLoading = false;
         update();
       }
@@ -154,6 +167,7 @@ class CartController extends GetxController {
       if (response.statusCode == 200) {
         products.removeWhere((element) => element.product.id == id);
         isLoading = false;
+        calculateTotalCart();
         update();
       }
       Get.snackbar('Success', 'Product deleted from cart');
@@ -164,5 +178,11 @@ class CartController extends GetxController {
       Get.snackbar(
           'Error', 'Opps, something went wrong when deleting from cart');
     }
+  }
+
+  void clearCart() {
+    products = [];
+    totalCart = 0;
+    update();
   }
 }

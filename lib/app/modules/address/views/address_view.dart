@@ -44,8 +44,7 @@ class AddressView extends GetView<AddressController> {
                                   WidgetStateProperty.all(Colors.black26),
                             ),
                             onPressed: () {
-                              Get.toNamed(
-                                  "${Routes.ADDRESS}${Routes.CREATE_ADDRESS}");
+                              Get.toNamed(Routes.CREATE_ADDRESS);
                             },
                             child: Text('Add Address',
                                 style: TextStyle(color: Colors.white)),
@@ -73,10 +72,26 @@ class AddressView extends GetView<AddressController> {
                                     ),
                                   ],
                                 ),
-                                trailing: IconButton(
-                                    icon: Icon(Icons.edit),
-                                    onPressed: () => Get.toNamed(
-                                        "${Routes.ADDRESS}/edit-address/${controller.addresses![index].id}")),
+                                trailing: Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    IconButton(
+                                        icon: Icon(Icons.edit),
+                                        onPressed: () => Get.toNamed(
+                                            "/edit-address/${controller.addresses![index].id}")),
+                                    IconButton(
+                                        icon:
+                                            Icon(Icons.delete_outline_outlined),
+                                        onPressed: () {
+                                          if (controller.isDeleting) {
+                                            return;
+                                          }
+                                          controller.deleteAddress(
+                                            controller.addresses![index].id,
+                                          );
+                                        }),
+                                  ],
+                                ),
                               );
                             },
                           ),
@@ -87,7 +102,7 @@ class AddressView extends GetView<AddressController> {
                                   WidgetStateProperty.all(Colors.black),
                             ),
                             onPressed: () {
-                              Get.toNamed("${Routes.ADDRESS}/create-address");
+                              Get.toNamed(Routes.CREATE_ADDRESS);
                             },
                             child: Text('Add Address',
                                 style: TextStyle(color: Colors.white)),

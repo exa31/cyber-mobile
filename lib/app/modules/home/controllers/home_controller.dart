@@ -1,6 +1,7 @@
 import 'dart:developer';
 
 import 'package:cyber/app/data/models/category_model.dart';
+import 'package:cyber/app/data/models/product_like_model.dart';
 import 'package:cyber/app/data/models/product_model.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
@@ -11,38 +12,55 @@ import 'package:shared_preferences/shared_preferences.dart';
 class HomeController extends GetxController {
   //TODO: Implement HomeController
 
-  final count = 0.obs;
   int indexPage = 0;
   List<ProductModel> products = [];
   List<CategoryModel> categories = [];
   Dio dio = Dio();
-
+  List<ProductLikeModel> listLikes = [];
   int totalProducts = 0;
+  TextEditingController searchController = TextEditingController();
   bool isLoadingCategory = false;
   bool isLoading = false;
   bool isLoadingEnd = false;
+  String search = '';
   String? name;
   String? email;
-  String? activeCategory;
-  var scroll = ScrollController();
+  String activeCategory = '';
+  var scrollHome = ScrollController();
+  var scrollSearch = ScrollController();
   CancelToken cancelToken = CancelToken();
 
   @override
   void onInit() {
     super.onInit();
-    scroll.addListener(() {
-      if (products.length < totalProducts &&
-          isLoadingEnd != true &&
-          scroll.position.pixels != 0 &&
-          scroll.position.atEdge) {
-        if (activeCategory != null && activeCategory!.isNotEmpty) {
-          addFetchProductsByCategory();
-        } else {
-          addFetchProducts();
+    searchController.clear();
+    scrollHome.addListener(
+      () {
+        if (products.length < totalProducts &&
+            isLoadingEnd != true &&
+            scrollHome.position.pixels != 0 &&
+            scrollHome.position.atEdge) {
+          if (activeCategory.isNotEmpty) {
+            addFetchProductsByCategory();
+          } else {
+            addFetchProducts();
+          }
         }
-      }
-    });
+      },
+    );
+    scrollSearch.addListener(
+      () {
+        if (products.length < totalProducts &&
+            isLoadingEnd != true &&
+            scrollSearch.position.pixels != 0 &&
+            scrollSearch.position.atEdge) {
+          log('add');
+          addFetchProductsBySearch();
+        }
+      },
+    );
     getProfile();
+    getLikesProduct();
     fetchAllFirst();
   }
 
@@ -54,15 +72,18 @@ class HomeController extends GetxController {
 
   void selectCategory({required String name}) async {
     if (activeCategory == name) {
-      activeCategory = null;
+      activeCategory = '';
       fetchProductsByCategory(name: '');
       update();
+      searchController.clear();
       return;
     }
     if (isLoading) {
       return;
     }
+    searchController.clear();
     activeCategory = name;
+
     fetchProductsByCategory(name: name);
     update();
   }
@@ -133,7 +154,7 @@ class HomeController extends GetxController {
     try {
       log(products.length.toString());
       var res = await dio.get(
-          '$url/api/products?limit=8&skip=${products.isNotEmpty ? products.length : 0}&category=$activeCategory');
+          '$url/api/products?limit=8&skip=${products.length}&category=$activeCategory');
       if (res.statusCode == 200) {
         List<dynamic> data = res.data['products'];
         var filterData = data.map((product) => ProductModel.fromJson(product));
@@ -156,7 +177,7 @@ class HomeController extends GetxController {
     isLoading = true;
     update();
     try {
-      var res = await dio.get('$url/api/products?category=$name&limit=8&');
+      var res = await dio.get('$url/api/products?category=$name&limit=8');
       if (res.statusCode == 200) {
         List<dynamic> data = res.data['products'];
         totalProducts = res.data['count'];
@@ -179,9 +200,7 @@ class HomeController extends GetxController {
     isLoadingCategory = true;
     update();
     try {
-      log('test');
       var res = await dio.get('$url/api/categories');
-      log('message');
       if (res.statusCode == 200) {
         List<dynamic> data = res.data;
         categories =
@@ -192,12 +211,139 @@ class HomeController extends GetxController {
         Get.snackbar('Error', 'Opps, something went wrong');
       }
     } catch (e) {
+      fetchCategories();
       print(e);
+    }
+  }
+
+  Future<void> fetchProductsBySearch({required String name}) async {
+    String url = dotenv.env['BASE_URL'].toString();
+    isLoading = true;
+    update();
+    try {
+      var res = await dio.get(
+          '$url/api/products?q=$name&limit=8&category=$activeCategory',
+          cancelToken: cancelToken);
+      if (res.statusCode == 200) {
+        List<dynamic> data = res.data['products'];
+        totalProducts = res.data['count'];
+        log(res.data['count'].toString());
+        log(totalProducts.toString());
+        products =
+            List.from(data.map((product) => ProductModel.fromJson(product)));
+        isLoading = false;
+        update();
+      } else {
+        Get.snackbar('Error', 'Opps, something went wrong');
+      }
+    } on DioException catch (e) {
+      log((e.type.toString() == DioExceptionType.cancel.toString()).toString());
+      if (cancelToken.isCancelled || e.type == DioExceptionType.cancel) {
+        log('cancelled');
+        isLoading = false;
+        return;
+      } else {
+        log(e.toString());
+        Get.snackbar('Error', 'Opps, something went wrong please refresh');
+      }
+    }
+  }
+
+  Future<void> addFetchProductsBySearch() async {
+    String url = dotenv.env['BASE_URL'].toString();
+    isLoadingEnd = true;
+    update();
+    try {
+      var res = await dio.get(
+          '$url/api/products?q=$search&limit=8&skip=${products.length}&category=$activeCategory');
+      if (res.statusCode == 200) {
+        List<dynamic> data = res.data['products'];
+        var filterData = data.map((product) => ProductModel.fromJson(product));
+        products.addAll(List.from(filterData));
+        isLoadingEnd = false;
+        update();
+      } else {
+        Get.snackbar('Error', 'Opps, something went wrong');
+        addFetchProductsBySearch();
+      }
+    } on DioException catch (e) {
+      if (cancelToken.isCancelled || e.type == DioExceptionType.cancel) {
+        isLoadingEnd = false;
+        update();
+        return;
+      }
+      Get.snackbar('Error', 'Opps, something went wrong');
+      addFetchProductsBySearch();
     }
   }
 
   void changePage(int index) {
     indexPage = index;
     update();
+  }
+
+  Future<void> getLikesProduct() async {
+    String url = dotenv.env['BASE_URL'].toString();
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String token = prefs.getString('token')!;
+    try {
+      var res = await dio.get(
+        '$url/api/likes',
+        options: Options(headers: {
+          'Authorization': "Bearer $token",
+        }),
+      );
+      if (res.statusCode == 200) {
+        List<dynamic> data = res.data;
+        listLikes = List.from(
+            data.map((product) => ProductLikeModel.fromJson(product)));
+        update();
+      } else {
+        Get.snackbar('Error', 'Opps, something went wrong please refresh');
+      }
+    } catch (e) {
+      Get.snackbar('Error', 'Opps, something went wrong please refresh');
+      print(e);
+    }
+  }
+
+  Future<void> likes({required String id}) async {
+    String url = dotenv.env['BASE_URL'].toString();
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String token = prefs.getString('token')!;
+    try {
+      var res = await dio.post(
+        '$url/api/likes',
+        data: {'productId': id},
+        options: Options(
+          headers: {
+            'Authorization': 'Bearer $token',
+          },
+        ),
+      );
+      if (res.statusCode == 201) {
+        if (listLikes.any((element) => element.id == id)) {
+          listLikes = listLikes.where((element) => element.id != id).toList();
+        } else {
+          listLikes.addAll(products
+              .where((element) => element.id == id)
+              .map((element) => ProductLikeModel(
+                    name: element.name,
+                    price: element.price,
+                    category: element.category,
+                    description: element.description,
+                    imageThumbnail: element.imageThumbnail,
+                    imageDetails: element.imageDetails,
+                    id: element.id,
+                  )));
+        }
+        update();
+      } else {
+        Get.snackbar('Error', 'Opps, something went wrong please refresh');
+      }
+    } catch (e) {
+      Get.snackbar('Error', 'Opps, something went wrong please refresh');
+      print(e);
+    }
   }
 }

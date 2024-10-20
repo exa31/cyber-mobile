@@ -1,6 +1,6 @@
-import 'package:cyber/app/modules/cart/controllers/cart_controller.dart';
 import 'package:cyber/app/modules/detail_product/controllers/detail_product_controller.dart';
 import 'package:cyber/app/modules/detail_product/widget/detail_product_widget.dart';
+import 'package:cyber/app/modules/home/controllers/home_controller.dart';
 import 'package:cyber/app/modules/home/widget/card_product_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -18,7 +18,7 @@ class DetailProductView extends StatelessWidget {
 
   final DetailProductController detailProductController =
       Get.find<DetailProductController>();
-  final CartController cartController = Get.find<CartController>();
+  final HomeController homeController = Get.find<HomeController>();
 
   @override
   Widget build(BuildContext context) {
@@ -139,6 +139,9 @@ class DetailProductView extends StatelessWidget {
                               children: List.generate(
                                 controller.products.length,
                                 (index) => CardProductWidget(
+                                  homeController: homeController,
+                                  like: homeController.listLikes.contains(
+                                      homeController.products[index].id),
                                   imageThumbnail:
                                       controller.products[index].imageThumbnail,
                                   id: controller.products[index].id,
@@ -170,7 +173,6 @@ class DetailProductView extends StatelessWidget {
                   onPressed: () async {
                     if (controller.isLoadingAddToCart) return;
                     await controller.addToCart(id: controller.product!.id);
-                    cartController.fetchCart();
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.black,
