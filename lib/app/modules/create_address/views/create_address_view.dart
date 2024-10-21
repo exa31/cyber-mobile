@@ -164,7 +164,9 @@ class CreateAddressView extends GetView<CreateAddressController> {
                           width: double.infinity,
                           child: ElevatedButton(
                             onPressed: () async {
-                              if (controller.nameController.text.isEmpty ||
+                              if (controller.isSubmit) {
+                              } else if (controller
+                                      .nameController.text.isEmpty ||
                                   controller.provinceController.text.isEmpty ||
                                   controller.kotaController.text.isEmpty ||
                                   controller.kecController.text.isEmpty ||

@@ -27,6 +27,7 @@ class CreateAddressController extends GetxController {
   bool isLoadingKota = true;
   bool isLoadingKec = true;
   bool isLoadingKel = true;
+  bool isSubmit = false;
 
   @override
   void onInit() {
@@ -47,6 +48,7 @@ class CreateAddressController extends GetxController {
   Future<void> createAddress() async {
     String url = dotenv.env['BASE_URL']!;
     SharedPreferences prefs = await SharedPreferences.getInstance();
+    isSubmit = true;
     try {
       var response = await dio.post(
         "$url/api/delivery-addresses",
@@ -68,6 +70,7 @@ class CreateAddressController extends GetxController {
         if (Get.arguments != null) {
           final SelectAddressesController selectAddressesController =
               Get.find<SelectAddressesController>();
+          isSubmit = false;
           await selectAddressesController.getAddress();
         } else {
           final AddressController addressController =
