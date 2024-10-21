@@ -122,6 +122,13 @@ class ProfilePages extends StatelessWidget {
                       title: Text('Order History'),
                       trailing: Icon(Icons.arrow_forward_ios),
                     ),
+                    ListTile(
+                      onTap: () {
+                        homeController.logout();
+                      },
+                      leading: Icon(Icons.logout),
+                      title: Text('Logout'),
+                    ),
                   ],
                 ),
               ),

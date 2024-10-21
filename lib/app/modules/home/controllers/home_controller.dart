@@ -346,4 +346,30 @@ class HomeController extends GetxController {
       print(e);
     }
   }
+
+  Future<void> logout() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String url = dotenv.env['BASE_URL'].toString();
+    String token = prefs.getString('token')!;
+    try {
+      var response = await dio.post(
+        '$url/api/auth/logout',
+        options: Options(
+          headers: {
+            'Authorization': 'Bearer $token',
+          },
+        ),
+      );
+      if (response.statusCode == 200) {
+        prefs.remove('token');
+        prefs.remove('name');
+        prefs.remove('email');
+        Get.offAllNamed('/login');
+      } else {
+        Get.snackbar('Error', 'Opps, something went wrong please refresh');
+      }
+    } catch (e) {
+      log(e.toString());
+    }
+  }
 }
