@@ -1,10 +1,10 @@
 import 'package:cyber/app/modules/home/controllers/home_controller.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
 
 class BarCategoriesWidget extends StatelessWidget {
-  BarCategoriesWidget({super.key});
-  final HomeController homeController = Get.find<HomeController>();
+  const BarCategoriesWidget({super.key, required this.homeController});
+  final HomeController homeController;
+
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(

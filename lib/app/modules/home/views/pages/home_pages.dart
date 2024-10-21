@@ -96,7 +96,9 @@ class HomePages extends StatelessWidget {
                   init: homeController,
                   builder: (controller) => controller.isLoadingCategory
                       ? SkeletonCategoriesWidget()
-                      : BarCategoriesWidget(),
+                      : BarCategoriesWidget(
+                          homeController: controller,
+                        ),
                 ),
                 SizedBox(height: 20),
                 GetBuilder(

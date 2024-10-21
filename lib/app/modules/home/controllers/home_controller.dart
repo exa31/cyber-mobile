@@ -34,6 +34,7 @@ class HomeController extends GetxController {
   void onInit() {
     super.onInit();
     searchController.clear();
+    indexPage = 0;
     scrollHome.addListener(
       () {
         if (products.length < totalProducts &&
@@ -364,7 +365,8 @@ class HomeController extends GetxController {
         prefs.remove('token');
         prefs.remove('name');
         prefs.remove('email');
-        Get.offAllNamed('/login');
+        await Get.deleteAll(force: true);
+        Get.offAllNamed('/login', predicate: (route) => false);
       } else {
         Get.snackbar('Error', 'Opps, something went wrong please refresh');
       }

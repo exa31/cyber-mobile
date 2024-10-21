@@ -99,7 +99,9 @@ class SearchProductView extends StatelessWidget {
                       SizedBox(height: 20),
                       controller.isLoadingCategory
                           ? SkeletonCategoriesWidget()
-                          : BarCategoriesWidget(),
+                          : BarCategoriesWidget(
+                              homeController: controller,
+                            ),
                       SizedBox(height: 20),
                       controller.isLoading
                           ? SkelatonProductsSearchWidget()
@@ -115,8 +117,10 @@ class SearchProductView extends StatelessWidget {
                                     controller.products.length,
                                     (index) => CardProductWidget(
                                       homeController: controller,
-                                      like: controller.listLikes.contains(
-                                          controller.products[index].id),
+                                      like: controller.listLikes.any(
+                                          (product) =>
+                                              product.id ==
+                                              controller.products[index].id),
                                       imageThumbnail: controller
                                           .products[index].imageThumbnail,
                                       id: controller.products[index].id,

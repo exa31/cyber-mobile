@@ -28,7 +28,7 @@ Future<void> main() async {
             ElevatedButton(
               onPressed: () {
                 // Reload the current route
-                Get.reload();
+                Get.offAllNamed(Routes.HOME);
               },
               child: Text("Refresh"),
             ),
